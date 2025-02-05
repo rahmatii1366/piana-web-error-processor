@@ -1,18 +1,21 @@
 package ir.piana.boot.utils.errorprocessor;
 
-import ir.piana.boot.utils.errorprocessor.badrequest.AbstractBadRequestException;
-import ir.piana.boot.utils.errorprocessor.forbiden.AbstractForbiddenException;
-import ir.piana.boot.utils.errorprocessor.internal.AbstractInternalServerException;
-import ir.piana.boot.utils.errorprocessor.notfound.AbstractNotFoundException;
-import ir.piana.boot.utils.errorprocessor.unauthorized.AbstractUnauthorizedException;
 import org.springframework.http.HttpStatus;
 
 import java.util.Locale;
 
 public abstract class ApiException extends RuntimeException implements ErrorType {
-    protected final ApiError apiError;
+    public static final String INTERNAL_ERROR = "internal.error";
+    public static final String INPUT_NOT_VALID = "input.not.valid";
+    public static final String REQUEST_BODY_NOT_VALID = "request.body.not.valid";
+    public static final String ACCESS_DENIED = "access.denied";
 
-    protected ApiException(String code, Object... params) {
+    protected final ApiError apiError;
+    protected final String className;
+    protected final String methodName;
+    protected final int lineNumber;
+
+    /*protected ApiException(String code, Object... params) {
         this((Throwable) null, code, code, Locale.getDefault(), params);
     }
 
@@ -37,7 +40,16 @@ public abstract class ApiException extends RuntimeException implements ErrorType
     }
 
     protected ApiException(Throwable throwable, String code, String message, Locale locale, Object... params) {
+
+    }*/
+
+    private ApiException(
+            String className, String methodName, int lineNumber,
+            Throwable throwable, String code, String message, Locale locale, Object... params) {
         super(code, throwable);
+        this.className = className;
+        this.methodName = methodName;
+        this.lineNumber = lineNumber;
         this.apiError = new ApiError(
                 code,
                 new ApiError.MessageContainer(
@@ -55,55 +67,59 @@ public abstract class ApiException extends RuntimeException implements ErrorType
 
     public static ApiException customApiException(
             HttpStatus status, String code) {
-        return customApiException((Throwable) null, status, code);
+        return createCustomApiException((Throwable) null, status, code, code, Locale.getDefault());
     }
 
     public static ApiException customApiException(
-            Throwable throwable, HttpStatus status, String code) {
-        return switch (status) {
-            case HttpStatus.BAD_REQUEST -> new AbstractBadRequestException(throwable, code) {
-            };
-            case HttpStatus.FORBIDDEN -> new AbstractForbiddenException(throwable, code) {
-            };
-            case HttpStatus.NOT_FOUND -> new AbstractNotFoundException(throwable, code) {
-            };
-            case HttpStatus.UNAUTHORIZED -> new AbstractUnauthorizedException(throwable, code) {
-            };
-            /*case HttpStatus.INTERNAL_SERVER_ERROR -> new AbstractInternalServerException(throwable, messageKey) {
-            };*/
-            default -> new AbstractInternalServerException(throwable, code) {
-            };
-        };
+            Throwable throwable, HttpStatus status, String code, Object... params) {
+        return createCustomApiException(throwable, status, code, code, Locale.getDefault(), params);
     }
 
     public static ApiException customApiException(
             HttpStatus status, String code, Object... params) {
-        return customApiException((Throwable) null, status, code, code, Locale.getDefault(), params);
+        return createCustomApiException((Throwable) null, status, code, code, Locale.getDefault(), params);
     }
 
     public static ApiException customApiException(
             HttpStatus status, String code, String message, Object... params) {
-        return customApiException((Throwable) null, status, code, message, Locale.getDefault(), params);
+        return createCustomApiException((Throwable) null, status, code, message, Locale.getDefault(), params);
     }
 
     public static ApiException customApiException(
             HttpStatus status, String code, Locale locale, Object... params) {
-        return customApiException((Throwable) null, status, code, code, locale, params);
+        return createCustomApiException((Throwable) null, status, code, code, locale, params);
     }
 
     public static ApiException customApiException(
             HttpStatus status, String code, String message, Locale locale, Object... params) {
-        return customApiException((Throwable) null, status, code, message, locale, params);
+        return createCustomApiException((Throwable) null, status, code, message, locale, params);
     }
 
     public static ApiException customApiException(
             Throwable throwable, HttpStatus status, String code, Locale locale, Object... params) {
-        return customApiException(throwable, status, code, code, locale, params);
+        return createCustomApiException(throwable, status, code, code, locale, params);
     }
 
     public static ApiException customApiException(
             Throwable throwable, HttpStatus status, String code, String message, Locale locale, Object... params) {
-        return switch (status) {
+        return createCustomApiException(throwable, status, code, message, locale, params);
+    }
+
+    private static ApiException createCustomApiException(
+            Throwable throwable, HttpStatus status, String code, String message, Locale locale, Object... params) {
+        StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[2];
+        return new ApiException(
+                stackTraceElement.getClassName(),
+                stackTraceElement.getMethodName(),
+                stackTraceElement.getLineNumber(),
+                throwable, code, message, locale, params) {
+            @Override
+            public HttpStatus getStatus() {
+                return status;
+            }
+        };
+
+        /*return switch (status) {
             case HttpStatus.BAD_REQUEST -> new AbstractBadRequestException(
                     throwable, code, message, locale, params) {
             };
@@ -122,7 +138,7 @@ public abstract class ApiException extends RuntimeException implements ErrorType
             default -> new AbstractInternalServerException(
                     throwable, code, message, locale, params) {
             };
-        };
+        };*/
     }
 
     //endregion
