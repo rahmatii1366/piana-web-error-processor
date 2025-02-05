@@ -1,6 +1,6 @@
 package ir.piana.boot.utils.errorprocessor.unauthorized;
 
-public class AlreadyLoggedIn extends AbstractUnauthorizedException{
+public final class AlreadyLoggedIn extends AbstractUnauthorizedException{
     public static final String code = "login.loggedIn.already";
 
     public AlreadyLoggedIn() {

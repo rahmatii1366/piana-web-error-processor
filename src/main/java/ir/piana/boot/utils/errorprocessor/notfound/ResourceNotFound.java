@@ -1,6 +1,6 @@
 package ir.piana.boot.utils.errorprocessor.notfound;
 
-public class ResourceNotFound extends AbstractNotFoundException {
+public final class ResourceNotFound extends AbstractNotFoundException {
     public static final String code = "resource.not_found";
 
     public ResourceNotFound() {

@@ -1,6 +1,6 @@
 package ir.piana.boot.utils.errorprocessor.unauthorized;
 
-public class ChannelUnknown extends AbstractUnauthorizedException{
+public final class ChannelUnknown extends AbstractUnauthorizedException{
     public static final String code = "channel.unknown";
 
     public ChannelUnknown() {

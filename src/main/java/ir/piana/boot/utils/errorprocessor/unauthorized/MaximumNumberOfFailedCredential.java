@@ -1,6 +1,6 @@
 package ir.piana.boot.utils.errorprocessor.unauthorized;
 
-public class MaximumNumberOfFailedCredential extends AbstractUnauthorizedException {
+public final class MaximumNumberOfFailedCredential extends AbstractUnauthorizedException {
     public static final String code = "loginFailedCredential.maximumTry.Exceeded";
 
     public MaximumNumberOfFailedCredential() {

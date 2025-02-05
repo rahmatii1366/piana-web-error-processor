@@ -62,7 +62,7 @@ public class ApiError {
     }
 
     ApiError interpolation(MessageSource messageSource) {
-        this.message = messageSource.getMessage(
+        this.message = messageContainer == null ? this.code : messageSource.getMessage(
                 messageContainer.code,
                 messageContainer.params,
                 messageContainer.code,

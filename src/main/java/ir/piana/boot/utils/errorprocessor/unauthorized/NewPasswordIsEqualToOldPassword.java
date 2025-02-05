@@ -1,6 +1,6 @@
 package ir.piana.boot.utils.errorprocessor.unauthorized;
 
-public class NewPasswordIsEqualToOldPassword extends AbstractUnauthorizedException {
+public final class NewPasswordIsEqualToOldPassword extends AbstractUnauthorizedException {
     public static final String code = "newPassword.isEqualTo.oldPassword";
 
     public NewPasswordIsEqualToOldPassword() {

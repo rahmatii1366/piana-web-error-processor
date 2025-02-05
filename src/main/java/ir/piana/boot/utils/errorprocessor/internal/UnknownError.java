@@ -1,6 +1,6 @@
 package ir.piana.boot.utils.errorprocessor.internal;
 
-public class UnknownError extends AbstractInternalServerException {
+public final class UnknownError extends AbstractInternalServerException {
     public static final String code = "unknown";
 
     public UnknownError() {

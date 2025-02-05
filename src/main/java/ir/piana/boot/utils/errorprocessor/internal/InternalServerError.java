@@ -1,6 +1,6 @@
 package ir.piana.boot.utils.errorprocessor.internal;
 
-public class InternalServerError extends AbstractInternalServerException {
+public final class InternalServerError extends AbstractInternalServerException {
     public static final String code = "internal.server.error";
 
     public InternalServerError() {

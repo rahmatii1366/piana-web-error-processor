@@ -1,6 +1,6 @@
 package ir.piana.boot.utils.errorprocessor.unauthorized;
 
-public class UsernameOrPasswordIsIncorrect extends AbstractUnauthorizedException {
+public final class UsernameOrPasswordIsIncorrect extends AbstractUnauthorizedException {
     public static final String code = "usernameOrPassword.incorrect";
 
     public UsernameOrPasswordIsIncorrect() {

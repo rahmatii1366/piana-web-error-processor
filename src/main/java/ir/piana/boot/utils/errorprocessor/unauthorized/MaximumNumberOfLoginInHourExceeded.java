@@ -1,6 +1,6 @@
 package ir.piana.boot.utils.errorprocessor.unauthorized;
 
-public class MaximumNumberOfLoginInHourExceeded extends AbstractUnauthorizedException {
+public final class MaximumNumberOfLoginInHourExceeded extends AbstractUnauthorizedException {
     public static final String code = "loginInHour.maximumNumber.exceeded";
 
     public MaximumNumberOfLoginInHourExceeded() {

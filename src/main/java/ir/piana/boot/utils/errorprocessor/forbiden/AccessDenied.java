@@ -1,6 +1,6 @@
 package ir.piana.boot.utils.errorprocessor.forbiden;
 
-public class AccessDenied extends AbstractForbiddenException {
+public final class AccessDenied extends AbstractForbiddenException {
     public static final String code = "access.denied";
 
     public AccessDenied() {

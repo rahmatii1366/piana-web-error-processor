@@ -1,6 +1,6 @@
 package ir.piana.boot.utils.errorprocessor.badrequest;
 
-public class InputNotValid extends AbstractBadRequestException {
+public final class InputNotValid extends AbstractBadRequestException {
     public static final String code = "request.input.not_valid";
 
     public InputNotValid() {
