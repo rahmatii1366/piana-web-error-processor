@@ -3,8 +3,10 @@ package ir.piana.boot.utils.errorprocessor;
 import ir.piana.boot.utils.errorprocessor.badrequest.InputNotValid;
 import ir.piana.boot.utils.errorprocessor.badrequest.RequestBodyNotValid;
 import ir.piana.boot.utils.errorprocessor.forbiden.AccessDenied;
+import ir.piana.boot.utils.errorprocessor.internal.InternalServerError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.MessageSource;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.ResponseEntity;
@@ -57,13 +59,25 @@ public class ApiAdviceHandler {
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ApiError> handleMethodArgumentNotValid(
             ApiException ex) {
+        if (ex.getCause() != null && ex.getCause() instanceof NoSuchBeanDefinitionException)
+            return handleNoSuchBeanDefinitionException((NoSuchBeanDefinitionException) ex.getCause());
+
         log.error("Error occurred : {}", ex.getMessage(), ex);
         return ResponseEntity.status(ex.getStatus()).body(ex.getApiError().interpolation(messageSource));
+    }
+
+    @ExceptionHandler(NoSuchBeanDefinitionException.class)
+    public ResponseEntity<ApiError> handleNoSuchBeanDefinitionException(
+            NoSuchBeanDefinitionException ex) {
+        log.error("No Bean error occurred : {}", ex.getMessage(), ex);
+        return ResponseEntity.status(500).body(new InternalServerError().getApiError());
     }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiError> handleMethodArgumentNotValid(
             RuntimeException ex) {
+        if (ex.getCause() != null && ex.getCause() instanceof NoSuchBeanDefinitionException)
+            return handleNoSuchBeanDefinitionException((NoSuchBeanDefinitionException) ex.getCause());
         log.error("Error occurred : {}", ex.getMessage(), ex);
         return ResponseEntity.status(500).body(new ApiError("ex.getApiError()"));
     }
@@ -109,4 +123,6 @@ public class ApiAdviceHandler {
         return ResponseEntity.status(new AccessDenied().getStatus())
                 .body(new AccessDenied().getApiError());
     }
+
+
 }
