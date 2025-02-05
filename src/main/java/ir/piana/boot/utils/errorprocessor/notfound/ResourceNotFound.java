@@ -1,7 +1,5 @@
 package ir.piana.boot.utils.errorprocessor.notfound;
 
-import ir.piana.boot.utils.errorprocessor.ApiException;
-
 public class ResourceNotFound extends AbstractNotFoundException {
     public static final String code = "resource.not_found";
 
@@ -9,5 +7,15 @@ public class ResourceNotFound extends AbstractNotFoundException {
         super(code);
     }
 
-    public static ApiException exception = new ResourceNotFound();
+    public ResourceNotFound(Throwable throwable) {
+        super(throwable, code);
+    }
+
+    public static void throwsException() {
+        throw new ResourceNotFound();
+    }
+
+    public static void throwsException(Throwable throwable) {
+        throw new ResourceNotFound(throwable);
+    }
 }

@@ -5,6 +5,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.MessageSource;
 
+//ToDo should be inspect
 public class MessageProvider implements ApplicationContextAware {
     private final MessageSource messageSource;
     private static ApplicationContext applicationContext;

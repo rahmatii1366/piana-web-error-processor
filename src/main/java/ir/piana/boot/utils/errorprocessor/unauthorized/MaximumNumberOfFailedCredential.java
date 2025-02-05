@@ -1,13 +1,21 @@
 package ir.piana.boot.utils.errorprocessor.unauthorized;
 
-import ir.piana.boot.utils.errorprocessor.ApiException;
-
-public class MaximumNumberOfFailedCredential extends AbstractUnauthorizedException{
+public class MaximumNumberOfFailedCredential extends AbstractUnauthorizedException {
     public static final String code = "loginFailedCredential.maximumTry.Exceeded";
 
     public MaximumNumberOfFailedCredential() {
         super(code);
     }
 
-    public static ApiException exception = new MaximumNumberOfFailedCredential();
+    public MaximumNumberOfFailedCredential(Throwable throwable) {
+        super(throwable, code);
+    }
+
+    public static void throwsException() {
+        throw new MaximumNumberOfFailedCredential();
+    }
+
+    public static void throwsException(Throwable throwable) {
+        throw new MaximumNumberOfFailedCredential(throwable);
+    }
 }

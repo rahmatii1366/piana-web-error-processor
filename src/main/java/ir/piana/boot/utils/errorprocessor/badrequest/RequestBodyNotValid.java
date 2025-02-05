@@ -1,7 +1,5 @@
 package ir.piana.boot.utils.errorprocessor.badrequest;
 
-import ir.piana.boot.utils.errorprocessor.ApiException;
-
 public class RequestBodyNotValid extends AbstractBadRequestException {
     public static final String code = "request.body.not_valid";
 
@@ -9,5 +7,15 @@ public class RequestBodyNotValid extends AbstractBadRequestException {
         super(code);
     }
 
-    public static ApiException exception = new RequestBodyNotValid();
+    public RequestBodyNotValid(Throwable throwable) {
+        super(throwable, code);
+    }
+
+    public static void throwsException() {
+        throw new RequestBodyNotValid();
+    }
+
+    public static void throwsException(Throwable throwable) {
+        throw new RequestBodyNotValid(throwable);
+    }
 }

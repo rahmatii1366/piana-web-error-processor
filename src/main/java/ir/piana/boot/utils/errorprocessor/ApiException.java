@@ -14,14 +14,27 @@ public abstract class ApiException extends RuntimeException implements ErrorType
     protected final ApiError apiError;
 
     protected ApiException(String code, Object... params) {
-        this(code, Locale.getDefault(), params);
+        this((Throwable) null, code, Locale.getDefault(), params);
+    }
+
+    protected ApiException(Throwable throwable, String code, Object... params) {
+        this(throwable, code, Locale.getDefault(), params);
     }
 
     protected ApiException(String code, Locale locale, Object... params) {
+        this((Throwable) null, code, locale, params);
+    }
+
+    protected ApiException(Throwable throwable, String code, Locale locale, Object... params) {
+        super(throwable);
         this.apiError = new ApiError(
                 code,
+                new ApiError.MessageContainer(
+                        code, locale, params));
+        /*this.apiError = new ApiError(
+                code,
                 MessageProvider.messageSource().getMessage(
-                        code, params, code, locale));
+                        code, params, code, locale));*/
     }
 
     @Override
@@ -33,13 +46,25 @@ public abstract class ApiException extends RuntimeException implements ErrorType
 
     //region static builders
 
-    public static ApiException customApiException(HttpStatus status, String code, Object... params) {
-        return customApiException(status, code, Locale.getDefault(), params);
+    public static ApiException customApiException(
+            HttpStatus status, String code, Object... params) {
+        return customApiException((Throwable) null, status, code, Locale.getDefault(), params);
     }
 
-    public static ApiException customApiException(HttpStatus status, String code, Locale locale, Object... params) {
+    public static ApiException customApiException(
+            Throwable throwable, HttpStatus status, String code, Object... params) {
+        return customApiException(throwable, status, code, Locale.getDefault(), params);
+    }
+
+    public static ApiException customApiException(
+            HttpStatus status, String code, Locale locale, Object... params) {
+        return customApiException((Throwable) null, status, code, locale, params);
+    }
+
+    public static ApiException customApiException(
+            Throwable throwable, HttpStatus status, String code, Locale locale, Object... params) {
         return switch (status) {
-            case HttpStatus.BAD_REQUEST -> new AbstractBadRequestException(code, locale, params) {
+            case HttpStatus.BAD_REQUEST -> new AbstractBadRequestException(throwable, code, locale, params) {
             };
             case HttpStatus.FORBIDDEN -> new AbstractForbiddenException(code, locale, params) {
             };
@@ -54,12 +79,13 @@ public abstract class ApiException extends RuntimeException implements ErrorType
         };
     }
 
-    public static void throwsCustomApiException(HttpStatus status, String code, Object... params) {
+    /*public static void throwsCustomApiException(
+            HttpStatus status, String code, Object... params) {
         throw customApiException(status, code, Locale.getDefault(), params);
     }
 
     public static void throwsCustomApiException(HttpStatus status, String code, Locale locale, Object... params) {
         throw customApiException(status, code, locale, params);
-    }
+    }*/
     //endregion
 }

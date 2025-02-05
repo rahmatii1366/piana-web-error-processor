@@ -1,7 +1,5 @@
 package ir.piana.boot.utils.errorprocessor.unauthorized;
 
-import ir.piana.boot.utils.errorprocessor.ApiException;
-
 public class ChannelUnknown extends AbstractUnauthorizedException{
     public static final String code = "channel.unknown";
 
@@ -9,5 +7,15 @@ public class ChannelUnknown extends AbstractUnauthorizedException{
         super(code);
     }
 
-    public static ApiException exception = new ChannelUnknown();
+    public ChannelUnknown(Throwable throwable) {
+        super(throwable, code);
+    }
+
+    public static void throwsException() {
+        throw new ChannelUnknown();
+    }
+
+    public static void throwsException(Throwable throwable) {
+        throw new ChannelUnknown(throwable);
+    }
 }

@@ -1,7 +1,5 @@
 package ir.piana.boot.utils.errorprocessor.unauthorized;
 
-import ir.piana.boot.utils.errorprocessor.ApiException;
-
 public class UsernameOrPasswordIsIncorrect extends AbstractUnauthorizedException {
     public static final String code = "usernameOrPassword.incorrect";
 
@@ -9,5 +7,15 @@ public class UsernameOrPasswordIsIncorrect extends AbstractUnauthorizedException
         super(code);
     }
 
-    public static ApiException exception = new UsernameOrPasswordIsIncorrect();
+    public UsernameOrPasswordIsIncorrect(Throwable throwable) {
+        super(throwable, code);
+    }
+
+    public static void throwsException() {
+        throw new UsernameOrPasswordIsIncorrect();
+    }
+
+    public static void throwsException(Throwable throwable) {
+        throw new UsernameOrPasswordIsIncorrect(throwable);
+    }
 }

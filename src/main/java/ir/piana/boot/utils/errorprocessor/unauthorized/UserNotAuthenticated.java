@@ -1,7 +1,5 @@
 package ir.piana.boot.utils.errorprocessor.unauthorized;
 
-import ir.piana.boot.utils.errorprocessor.ApiException;
-
 public final class UserNotAuthenticated extends AbstractUnauthorizedException {
     public static final String code = "user.not.authenticated";
 
@@ -9,5 +7,15 @@ public final class UserNotAuthenticated extends AbstractUnauthorizedException {
         super(code);
     }
 
-    public static ApiException exception = new UserNotAuthenticated();
+    public UserNotAuthenticated(Throwable throwable) {
+        super(throwable, code);
+    }
+
+    public static void throwsException() {
+        throw new UserNotAuthenticated();
+    }
+
+    public static void throwsException(Throwable throwable) {
+        throw new UserNotAuthenticated(throwable);
+    }
 }

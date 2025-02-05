@@ -1,7 +1,6 @@
 package ir.piana.boot.utils.errorprocessor.unauthorized;
 
 import ir.piana.boot.utils.errorprocessor.ApiException;
-import ir.piana.boot.utils.errorprocessor.badrequest.InputNotValid;
 import org.springframework.http.HttpStatus;
 
 import java.util.Locale;
@@ -9,11 +8,21 @@ import java.util.Locale;
 public abstract class AbstractUnauthorizedException extends ApiException {
 
     protected AbstractUnauthorizedException(String code, Object... params) {
-        this(code, Locale.getDefault(), params);
+        super((Throwable) null, code, Locale.getDefault(), params);
+    }
+
+    protected AbstractUnauthorizedException(
+            Throwable throwable, String code, Object... params) {
+        super(throwable, code, Locale.getDefault(), params);
     }
 
     protected AbstractUnauthorizedException(String code, Locale locale, Object... params) {
-        super(code, locale, params);
+        super((Throwable) null, code, locale, params);
+    }
+
+    protected AbstractUnauthorizedException(
+            Throwable throwable, String code, Locale locale, Object... params) {
+        super(throwable, code, locale, params);
     }
 
     @Override
@@ -21,13 +30,28 @@ public abstract class AbstractUnauthorizedException extends ApiException {
         return HttpStatus.UNAUTHORIZED;
     }
 
-    //region exception errors instances
-    /*public static AlreadyLoggedIn alreadyLoggedIn = new AlreadyLoggedIn();
-    public static ChannelUnknown channelUnknown = new ChannelUnknown();
-    public static MaximumNumberOfFailedCredential maximumNumberOfFailedCredential = new MaximumNumberOfFailedCredential();
-    public static MaximumNumberOfLoginInHourExceeded maximumNumberOfLoginInHourExceeded = new MaximumNumberOfLoginInHourExceeded();
-    public static NewPasswordIsEqualToOldPassword newPasswordIsEqualToOldPassword = new NewPasswordIsEqualToOldPassword();
-    public static UsernameOrPasswordIsIncorrect usernameOrPasswordIsIncorrect = new UsernameOrPasswordIsIncorrect();
-    public static UserNotAuthenticated userNotAuthenticated = new UserNotAuthenticated();*/
+    //region static builders
+
+    public static ApiException customApiException(
+            String code, Object... params) {
+        return customApiException((Throwable) null, code, Locale.getDefault(), params);
+    }
+
+    public static ApiException customApiException(
+            Throwable throwable, String code, Object... params) {
+        return customApiException(throwable, code, Locale.getDefault(), params);
+    }
+
+    public static ApiException customApiException(
+            String code, Locale locale, Object... params) {
+        return customApiException((Throwable) null, code, locale, params);
+    }
+
+    public static ApiException customApiException(
+            Throwable throwable, String code, Locale locale, Object... params) {
+        return new AbstractUnauthorizedException(code, locale, params) {
+        };
+    }
+
     //endregion
 }
