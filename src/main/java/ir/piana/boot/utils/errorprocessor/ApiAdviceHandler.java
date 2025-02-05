@@ -69,7 +69,7 @@ public class ApiAdviceHandler {
     @ExceptionHandler(NoSuchBeanDefinitionException.class)
     public ResponseEntity<ApiError> handleNoSuchBeanDefinitionException(
             NoSuchBeanDefinitionException ex) {
-        log.error("No Bean error occurred : {}", ex.getMessage(), ex);
+        log.error("No Bean error occurred : {}", ex.getMessage());
         return ResponseEntity.status(500).body(new InternalServerError().getApiError());
     }
 
