@@ -7,12 +7,16 @@ import org.springframework.http.HttpStatus;
 import java.util.Locale;
 
 public abstract class AbstractNotFoundException extends ApiException {
-    protected AbstractNotFoundException(String code) {
-        super((Throwable) null, code);
+    protected AbstractNotFoundException(String code, Object... params) {
+        super((Throwable) null, code, params);
     }
 
-    protected AbstractNotFoundException(Throwable throwable, String code) {
-        super(throwable, code);
+    protected AbstractNotFoundException(Throwable throwable, String code, Object... params) {
+        super(throwable, code, params);
+    }
+
+    protected AbstractNotFoundException(String code, Locale locale, Object... params) {
+        super((Throwable) null, code, locale, params);
     }
 
     protected AbstractNotFoundException(String code, String message, Locale locale, Object... params) {

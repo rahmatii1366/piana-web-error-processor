@@ -7,13 +7,18 @@ import org.springframework.http.HttpStatus;
 import java.util.Locale;
 
 public abstract class AbstractBadRequestException extends ApiException {
-    protected AbstractBadRequestException(String code) {
-        super((Throwable) null, code);
+    protected AbstractBadRequestException(String code, Object... params) {
+        super((Throwable) null, code, params);
     }
 
     protected AbstractBadRequestException(
-            Throwable throwable, String code) {
-        super(throwable, code);
+            Throwable throwable, String code, Object... params) {
+        super(throwable, code, params);
+    }
+
+    protected AbstractBadRequestException(
+            String code, Locale locale, Object... params) {
+        super((Throwable) null, code, locale, params);
     }
 
     protected AbstractBadRequestException(

@@ -12,13 +12,16 @@ import java.util.Locale;
 public abstract class ApiException extends RuntimeException implements ErrorType {
     protected final ApiError apiError;
 
-    protected ApiException(String code) {
-        this((Throwable) null, code);
+    protected ApiException(String code, Object... params) {
+        this((Throwable) null, code, code, Locale.getDefault(), params);
     }
 
-    protected ApiException(Throwable throwable, String code) {
-        super(throwable);
-        this.apiError = new ApiError(code, null);
+    protected ApiException(Throwable throwable, String code, Object... params) {
+        this(throwable, code, code, Locale.getDefault(), params);
+    }
+
+    protected ApiException(Throwable throwable, String code, Locale locale, Object... params) {
+        this(throwable, code, code, locale, params);
     }
 
     protected ApiException(String code, String message, Object... params) {
@@ -34,7 +37,7 @@ public abstract class ApiException extends RuntimeException implements ErrorType
     }
 
     protected ApiException(Throwable throwable, String code, String message, Locale locale, Object... params) {
-        super(throwable);
+        super(code, throwable);
         this.apiError = new ApiError(
                 code,
                 new ApiError.MessageContainer(
@@ -66,11 +69,16 @@ public abstract class ApiException extends RuntimeException implements ErrorType
             };
             case HttpStatus.UNAUTHORIZED -> new AbstractUnauthorizedException(throwable, code) {
             };
-            /*case HttpStatus.INTERNAL_SERVER_ERROR -> new AbstractInternalServerException(throwable, code) {
+            /*case HttpStatus.INTERNAL_SERVER_ERROR -> new AbstractInternalServerException(throwable, messageKey) {
             };*/
             default -> new AbstractInternalServerException(throwable, code) {
             };
         };
+    }
+
+    public static ApiException customApiException(
+            HttpStatus status, String code, Object... params) {
+        return customApiException((Throwable) null, status, code, code, Locale.getDefault(), params);
     }
 
     public static ApiException customApiException(
@@ -79,20 +87,34 @@ public abstract class ApiException extends RuntimeException implements ErrorType
     }
 
     public static ApiException customApiException(
+            HttpStatus status, String code, Locale locale, Object... params) {
+        return customApiException((Throwable) null, status, code, code, locale, params);
+    }
+
+    public static ApiException customApiException(
             HttpStatus status, String code, String message, Locale locale, Object... params) {
         return customApiException((Throwable) null, status, code, message, locale, params);
     }
 
     public static ApiException customApiException(
+            Throwable throwable, HttpStatus status, String code, Locale locale, Object... params) {
+        return customApiException(throwable, status, code, code, locale, params);
+    }
+
+    public static ApiException customApiException(
             Throwable throwable, HttpStatus status, String code, String message, Locale locale, Object... params) {
         return switch (status) {
-            case HttpStatus.BAD_REQUEST -> new AbstractBadRequestException(throwable, code, message, locale, params) {
+            case HttpStatus.BAD_REQUEST -> new AbstractBadRequestException(
+                    throwable, code, message, locale, params) {
             };
-            case HttpStatus.FORBIDDEN -> new AbstractForbiddenException(throwable, code, message, locale, params) {
+            case HttpStatus.FORBIDDEN -> new AbstractForbiddenException(
+                    throwable, code, message, locale, params) {
             };
-            case HttpStatus.NOT_FOUND -> new AbstractNotFoundException(throwable, code, message, locale, params) {
+            case HttpStatus.NOT_FOUND -> new AbstractNotFoundException(
+                    throwable, code, message, locale, params) {
             };
-            case HttpStatus.UNAUTHORIZED -> new AbstractUnauthorizedException(throwable, code, message, locale, params) {
+            case HttpStatus.UNAUTHORIZED -> new AbstractUnauthorizedException(
+                    throwable, code, message, locale, params) {
             };
             case HttpStatus.INTERNAL_SERVER_ERROR -> new AbstractInternalServerException(
                     throwable, code, message, locale, params) {
@@ -103,13 +125,5 @@ public abstract class ApiException extends RuntimeException implements ErrorType
         };
     }
 
-    /*public static void throwsCustomApiException(
-            HttpStatus status, String code, Object... params) {
-        throw customApiException(status, code, Locale.getDefault(), params);
-    }
-
-    public static void throwsCustomApiException(HttpStatus status, String code, Locale locale, Object... params) {
-        throw customApiException(status, code, locale, params);
-    }*/
     //endregion
 }

@@ -62,7 +62,13 @@ public class ApiAdviceHandler {
         if (ex.getCause() != null && ex.getCause() instanceof NoSuchBeanDefinitionException)
             return handleNoSuchBeanDefinitionException((NoSuchBeanDefinitionException) ex.getCause());
 
-        log.error("Error occurred : {}", ex.getMessage(), ex);
+        ApiError interpolation = ex.getApiError().interpolation(messageSource);
+
+        if (ex.getCause() != null)
+            log.error("Error occurred : {}", interpolation.getMessage(), ex);
+        else
+            log.error("Error occurred : {}", interpolation.getMessage());
+
         return ResponseEntity.status(ex.getStatus()).body(
                 ex.getApiError().interpolation(messageSource));
     }

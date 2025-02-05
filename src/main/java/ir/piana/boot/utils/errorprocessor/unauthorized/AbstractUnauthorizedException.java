@@ -7,13 +7,17 @@ import java.util.Locale;
 
 public abstract class AbstractUnauthorizedException extends ApiException {
 
-    protected AbstractUnauthorizedException(String code) {
-        super((Throwable) null, code);
+    protected AbstractUnauthorizedException(String code, Object... params) {
+        super((Throwable) null, code, params);
     }
 
     protected AbstractUnauthorizedException(
-            Throwable throwable, String code) {
-        super(throwable, code);
+            Throwable throwable, String code, Object... params) {
+        super(throwable, code, params);
+    }
+
+    protected AbstractUnauthorizedException(String code, Locale locale, Object... params) {
+        super((Throwable) null, code, locale, params);
     }
 
     protected AbstractUnauthorizedException(String code, String message, Locale locale, Object... params) {

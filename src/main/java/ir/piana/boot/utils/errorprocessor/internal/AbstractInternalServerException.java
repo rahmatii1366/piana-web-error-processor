@@ -7,13 +7,18 @@ import java.util.Locale;
 
 public abstract class AbstractInternalServerException extends ApiException {
 
-    protected AbstractInternalServerException(String code) {
-        super((Throwable) null, code);
+    protected AbstractInternalServerException(String code, Object... params) {
+        super((Throwable) null, code, params);
     }
 
     protected AbstractInternalServerException(
-            Throwable throwable, String code) {
-        super(throwable, code);
+            Throwable throwable, String code, Object... params) {
+        super(throwable, code, params);
+    }
+
+    protected AbstractInternalServerException(
+            Throwable throwable, String code, Locale locale, Object... params) {
+        super(throwable, code, locale, params);
     }
 
     protected AbstractInternalServerException(
