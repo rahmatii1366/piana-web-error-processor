@@ -5,15 +5,9 @@ import org.springframework.http.HttpStatus;
 import java.util.Locale;
 
 public abstract class ApiException extends RuntimeException implements ErrorType {
-    public static final String INTERNAL_ERROR = "internal.error";
-    public static final String INPUT_NOT_VALID = "input.not.valid";
-    public static final String REQUEST_BODY_NOT_VALID = "request.body.not.valid";
-    public static final String ACCESS_DENIED = "access.denied";
-
     protected final ApiError apiError;
-    protected final String className;
-    protected final String methodName;
-    protected final int lineNumber;
+    protected final StackTraceElement[] stackTrace;
+//    protected final String stackTrace;
 
     /*protected ApiException(String code, Object... params) {
         this((Throwable) null, code, code, Locale.getDefault(), params);
@@ -43,17 +37,34 @@ public abstract class ApiException extends RuntimeException implements ErrorType
 
     }*/
 
-    private ApiException(
-            String className, String methodName, int lineNumber,
-            Throwable throwable, String code, String message, Locale locale, Object... params) {
-        super(code, throwable);
-        this.className = className;
-        this.methodName = methodName;
-        this.lineNumber = lineNumber;
+//    ApiException(
+//            StackTraceElement[] stackTrace,
+//            Throwable throwable, String code, String message, Locale locale, Object... params) {
+//        super(code, throwable);
+//        this.stackTrace = stackTrace;
+//        this.apiError = new ApiError(
+//                code,
+//                new ApiError.MessageContainer(
+//                        message == null ? code : message, locale, params));
+//    }
+
+    ApiException(
+            StackTraceElement[] stackTrace,
+            Throwable throwable, String messageKey, Locale locale, Object... params) {
+        super(messageKey, throwable);
+        this.stackTrace = stackTrace;
         this.apiError = new ApiError(
-                code,
-                new ApiError.MessageContainer(
-                        message == null ? code : message, locale, params));
+                messageKey,
+                new ApiError.MessageContainer(messageKey, locale, params));
+    }
+
+    ApiException(
+            StackTraceElement[] stackTrace,
+            Throwable throwable,
+            ApiError apiError) {
+        super(apiError.getCode(), throwable);
+        this.stackTrace = stackTrace;
+        this.apiError = apiError;
     }
 
     @Override
@@ -61,85 +72,11 @@ public abstract class ApiException extends RuntimeException implements ErrorType
         return apiError;
     }
 
+    @Override
+    public StackTraceElement[] getStackTrace() {
+        return stackTrace;
+    }
+
+    @Override
     public abstract HttpStatus getStatus();
-
-    //region static builders
-
-    public static ApiException customApiException(
-            HttpStatus status, String code) {
-        return createCustomApiException((Throwable) null, status, code, code, Locale.getDefault());
-    }
-
-    public static ApiException customApiException(
-            Throwable throwable, HttpStatus status, String code, Object... params) {
-        return createCustomApiException(throwable, status, code, code, Locale.getDefault(), params);
-    }
-
-    public static ApiException customApiException(
-            HttpStatus status, String code, Object... params) {
-        return createCustomApiException((Throwable) null, status, code, code, Locale.getDefault(), params);
-    }
-
-    public static ApiException customApiException(
-            HttpStatus status, String code, String message, Object... params) {
-        return createCustomApiException((Throwable) null, status, code, message, Locale.getDefault(), params);
-    }
-
-    public static ApiException customApiException(
-            HttpStatus status, String code, Locale locale, Object... params) {
-        return createCustomApiException((Throwable) null, status, code, code, locale, params);
-    }
-
-    public static ApiException customApiException(
-            HttpStatus status, String code, String message, Locale locale, Object... params) {
-        return createCustomApiException((Throwable) null, status, code, message, locale, params);
-    }
-
-    public static ApiException customApiException(
-            Throwable throwable, HttpStatus status, String code, Locale locale, Object... params) {
-        return createCustomApiException(throwable, status, code, code, locale, params);
-    }
-
-    public static ApiException customApiException(
-            Throwable throwable, HttpStatus status, String code, String message, Locale locale, Object... params) {
-        return createCustomApiException(throwable, status, code, message, locale, params);
-    }
-
-    private static ApiException createCustomApiException(
-            Throwable throwable, HttpStatus status, String code, String message, Locale locale, Object... params) {
-        StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[2];
-        return new ApiException(
-                stackTraceElement.getClassName(),
-                stackTraceElement.getMethodName(),
-                stackTraceElement.getLineNumber(),
-                throwable, code, message, locale, params) {
-            @Override
-            public HttpStatus getStatus() {
-                return status;
-            }
-        };
-
-        /*return switch (status) {
-            case HttpStatus.BAD_REQUEST -> new AbstractBadRequestException(
-                    throwable, code, message, locale, params) {
-            };
-            case HttpStatus.FORBIDDEN -> new AbstractForbiddenException(
-                    throwable, code, message, locale, params) {
-            };
-            case HttpStatus.NOT_FOUND -> new AbstractNotFoundException(
-                    throwable, code, message, locale, params) {
-            };
-            case HttpStatus.UNAUTHORIZED -> new AbstractUnauthorizedException(
-                    throwable, code, message, locale, params) {
-            };
-            case HttpStatus.INTERNAL_SERVER_ERROR -> new AbstractInternalServerException(
-                    throwable, code, message, locale, params) {
-            };
-            default -> new AbstractInternalServerException(
-                    throwable, code, message, locale, params) {
-            };
-        };*/
-    }
-
-    //endregion
 }

@@ -17,16 +17,16 @@ public class ApiError {
     private final MessageContainer messageContainer;
 
 
-    public ApiError(String code, Object... params) {
-        this(code, new MessageContainer(code, Locale.getDefault(), params), null);
+    public ApiError(String code) {
+        this(code, new MessageContainer(code, Locale.getDefault()), null);
     }
 
     public ApiError(String code, MessageContainer messageContainer) {
         this(code, messageContainer, null);
     }
 
-    /*public ApiError(String messageKey, String message) {
-        this(messageKey, message, null);
+    /*public ApiError(String code, String message) {
+        this(code, message, null);
     }*/
 
     ApiError(
@@ -62,14 +62,14 @@ public class ApiError {
     }
 
     ApiError interpolation(MessageSource messageSource) {
-        this.message = messageContainer == null ? this.code : messageSource.getMessage(
-                messageContainer.messageKey,
+        this.message = messageSource.getMessage(
+                messageContainer.code,
                 messageContainer.params,
-                messageContainer.messageKey,
+                messageContainer.code,
                 messageContainer.locale);
         return this;
     }
 
-    record MessageContainer(String messageKey, Locale locale, Object... params) {
+    public record MessageContainer(String code, Locale locale, Object... params) {
     }
 }

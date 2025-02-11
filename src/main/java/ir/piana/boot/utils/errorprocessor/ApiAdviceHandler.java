@@ -3,6 +3,7 @@ package ir.piana.boot.utils.errorprocessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -24,9 +26,9 @@ import java.util.List;
  * ConversionFailedException
  * HttpMessageNotReadableException
  * AuthorizationDeniedException
- *
+ * <p>
  * please provide message for bellow codes
- *
+ * <p>
  * request.input.not_valid
  * request.body.not_valid
  * access.denied
@@ -40,7 +42,6 @@ import java.util.List;
  * newPassword.isEqualTo.oldPassword
  * usernameOrPassword.incorrect
  * user.not.authenticated
- *
  */
 //@CrossOrigin
 //@RestControllerAdvice
@@ -61,10 +62,11 @@ public class ApiAdviceHandler {
 
         ApiError interpolation = ex.getApiError().interpolation(messageSource);
 
-        if (ex.getCause() != null)
+        log.error("Error occurred : {}", interpolation.getMessage(), ex);
+        /*if (ex.getCause() != null)
             log.error("Error occurred : {}", interpolation.getMessage(), ex);
         else
-            log.error("Error occurred : {}", interpolation.getMessage());
+            log.error("Error occurred : {}", interpolation.getMessage());*/
 
         return ResponseEntity.status(ex.getStatus()).body(interpolation);
     }
@@ -74,7 +76,7 @@ public class ApiAdviceHandler {
             NoSuchBeanDefinitionException ex) {
         log.error("No Bean error occurred : {}", ex.getMessage());
         return ResponseEntity.status(500).body(
-                new ApiError(ApiException.INTERNAL_ERROR).interpolation(messageSource));
+                new ApiError("INTERNAL_ERROR").interpolation(messageSource));
     }
 
     @ExceptionHandler(RuntimeException.class)
@@ -84,7 +86,7 @@ public class ApiAdviceHandler {
             return handleNoSuchBeanDefinitionException((NoSuchBeanDefinitionException) ex.getCause());
         log.error("Error occurred : {}", ex.getMessage(), ex);
         return ResponseEntity.status(500).body(
-                new ApiError(ApiException.INTERNAL_ERROR).interpolation(messageSource));
+                new ApiError("INTERNAL_ERROR").interpolation(messageSource));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -98,10 +100,10 @@ public class ApiAdviceHandler {
 
         if (validationErrors.isEmpty())
             return ResponseEntity.badRequest().body(
-                    new ApiError(ApiException.INPUT_NOT_VALID).interpolation(messageSource));
+                    new ApiError("INPUT_NOT_VALID").interpolation(messageSource));
         else
             return ResponseEntity.badRequest().body(
-                    new ApiError(ApiException.INPUT_NOT_VALID).interpolation(messageSource));
+                    new ApiError("INPUT_NOT_VALID").interpolation(messageSource));
     }
 
     @ExceptionHandler(ConversionFailedException.class)
@@ -109,7 +111,7 @@ public class ApiAdviceHandler {
             RuntimeException ex) {
         log.error("Error occurred : {}", ex.getMessage(), ex);
         return ResponseEntity.badRequest()
-                .body(new ApiError(ApiException.INPUT_NOT_VALID).interpolation(messageSource));
+                .body(new ApiError("INPUT_NOT_VALID").interpolation(messageSource));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -117,7 +119,7 @@ public class ApiAdviceHandler {
             HttpMessageNotReadableException ex, WebRequest request) {
         log.error("Error occurred : {}", ex.getMessage(), ex);
         return ResponseEntity.badRequest()
-                .body(new ApiError(ApiException.INPUT_NOT_VALID).interpolation(messageSource));
+                .body(new ApiError("INPUT_NOT_VALID").interpolation(messageSource));
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)
@@ -125,7 +127,7 @@ public class ApiAdviceHandler {
             AuthorizationDeniedException ex, WebRequest request) {
         log.error("Error occurred : {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                new ApiError(ApiException.ACCESS_DENIED).interpolation(messageSource));
+                new ApiError("ACCESS_DENIED").interpolation(messageSource));
     }
 
 
